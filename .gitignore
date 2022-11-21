@@ -1,0 +1,82 @@
+*.py[cod]
+
+#Config File
+appconfig.py
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+node_modules
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+.idea
+*~
+*.swp
+*.swo
+*#*
+.DS*
+*.iml
+
+
+*.log
+pip-log.txt
+
+media
+
+
+# angular configs
+angular/node_modules
+angular/dist
+angular/.tmp
+angular/.sass-cache
+angular/app/bower_components
+angular/app/styles/main.css
+
+# Node modules
+node_modules/
+npm-debug.log
+
+# Bower components
+webapp/static/bower_components/
+
+
+# Uglified JavaScript
+dist/
+
+# Staticfiles
+staticfiles/
+
+# Default html coverage location
+htmlcov/
+pyvenv.cfg
+
+.Python
+include/

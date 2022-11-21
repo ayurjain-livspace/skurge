@@ -1,0 +1,297 @@
+swagger: '2.0'
+info:
+  title: Skurge
+  description: Skurge is a generic data transformation and data relay service.
+  license:
+    name: Apache license, Version 2.0
+  version: v1
+host: localhost:7042
+schemes:
+  - http
+basePath: /
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /api/v1/register-event:
+    post:
+      operationId: api_v1_register-event_create
+      description: |-
+        Registers an event in source_events, Only these events will be processed by skurge
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Source event that needs to be registered"
+        required: true
+        schema:
+          $ref: "#/definitions/SourceEvent"
+      responses:
+        '200':
+          description: 'Returns registered source event'
+      tags:
+        - api
+    parameters: []
+  /api/v1/registered-event/{event_id}:
+    get:
+      operationId: api_v1_registered-event_read
+      description: |-
+        Gets event corresponding to event_id and all its data & relay processors
+      parameters: []
+      responses:
+        '200':
+          description: 'Returns registered source event'
+      tags:
+        - api
+    put:
+      operationId: api_v1_registered-event_update
+      description: |-
+        Updates an event registered in skurge
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Source event that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/SourceEvent"
+      responses:
+        '200':
+          description: 'Returns source event after update'
+      tags:
+        - api
+    parameters:
+      - name: event_id
+        in: path
+        required: true
+        type: string
+  /api/v1/registered-event/{event_id}/relayer:
+    post:
+      operationId: api_v1_registered-event_relayer_create
+      description: |-
+        Add relay and data processor to the registered event
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Data and relay processors to be added to source event"
+        required: true
+        schema:
+          type: object
+          properties:
+            data_processor:
+              $ref: "#/definitions/DataProcessor"
+            relay_processor:
+              $ref: "#/definitions/RelayProcessor"
+      responses:
+        '200':
+          description: 'Success'
+      tags:
+        - api
+    parameters:
+      - name: event_id
+        in: path
+        required: true
+        type: string
+  /api/v1/registered-event/{event_id}/relayer/{relayer_id}:
+    get:
+      operationId: api_v1_registered-event_relayer_read
+      description: |-
+        Gets relay and data processor of the registered event
+      parameters: []
+      responses:
+        '200':
+          description: 'Returns relay and data processor of the registered event '
+      tags:
+        - api
+    put:
+      operationId: api_v1_registered-event_relayer_update
+      description: |-
+        Updates relay or corresponding data processor of the registered event
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Data and relay processors to be updated for the source event"
+        required: true
+        schema:
+          type: object
+          properties:
+            data_processor:
+              $ref: "#/definitions/DataProcessor"
+            relay_processor:
+              $ref: "#/definitions/RelayProcessor"
+      responses:
+        '200':
+          description: 'Returns updated relay and data processor'
+      tags:
+        - api
+    parameters:
+      - name: event_id
+        in: path
+        required: true
+        type: string
+      - name: relayer_id
+        in: path
+        required: true
+        type: string
+  /api/v1/registered-events:
+    get:
+      operationId: api_v1_registered-events_list
+      description: |-
+        Gets all events registered in skurge
+      parameters: []
+      responses:
+        '200':
+          description: 'Returns all events registered in skurge'
+      tags:
+        - api
+    parameters: []
+  /api/v1/relay-event/{event_name}:
+    post:
+      operationId: api_v1_relay-event_create
+      description: |-
+        Processes incoming event and relays it to appropriate system
+      parameters: []
+      responses:
+        '200':
+          description: 'Success'
+      tags:
+        - api
+    parameters:
+      - name: event_name
+        in: path
+        required: true
+        type: string
+  /ruok:
+    get:
+      operationId: ruok_list
+      description: API endpoint for health-check.
+      parameters: []
+      responses:
+        '200':
+          description: 'Success'
+      tags:
+        - ruok
+    parameters: []
+definitions:
+  SourceEvent:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      is_deleted:
+        type: "boolean"
+        default: false
+      is_active:
+        type: "boolean"
+        default: true
+      created_at:
+        type: "string"
+        format: "date-time"
+      modified_at:
+        type: "string"
+        format: "date-time"
+      source_event:
+        type: "string"
+        description: "Name of source event to be processed"
+      input_json_schema:
+        type: "object"
+    xml:
+      name: "SourceEvent"
+  DataProcessor:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      is_deleted:
+        type: "boolean"
+        default: false
+      created_at:
+        type: "string"
+        format: "date-time"
+      modified_at:
+        type: "string"
+        format: "date-time"
+      graphql_query:
+        type: "string"
+      relay_data_locator:
+        type: "object"
+      default_response:
+        type: "object"
+      relay_json_schema:
+        type: "object"
+    xml:
+      name: "DataProcessor"
+  RelayProcessor:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      is_deleted:
+        type: "boolean"
+        default: false
+      created_at:
+        type: "string"
+        format: "date-time"
+      modified_at:
+        type: "string"
+        format: "date-time"
+      is_active:
+        type: "boolean"
+        default: true
+      data_processor_id:
+        type: "integer"
+        format: "int64"
+      source_event_id:
+        type: "integer"
+        format: "int64"
+      relay_type:
+        type: "string"
+        enum:
+        - "EVENT"
+        - "API"
+      relay_system:
+        type: "string"
+      relay_event_rules:
+        type: "object"
+      relay_http_endpoint_rules:
+        type: "object"
+      context_data_locator:
+        type: "object"
+    xml:
+      name: "RelayProcessor"
+  RelayLogs:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      is_deleted:
+        type: "boolean"
+        default: false
+      created_at:
+        type: "string"
+        format: "date-time"
+      modified_at:
+        type: "string"
+        format: "date-time"
+      source_event_name:
+        type: "string"
+      destination_relay_name:
+        type: "string"
+      relay_type:
+        type: "string"
+      relay_data:
+        type: "object"
+      status:
+        type: "string"
+      reason:
+        type: "string"
+    xml:
+      name: "RelayLogs"

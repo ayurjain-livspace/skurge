@@ -1,0 +1,9 @@
+uwsgi:
+  module: webapp.wsgi
+  callable: application
+  processes: 50
+  buffer-size: 32768
+  enable-threads: True
+  cheaper: 6
+  cheaper-initial: 6
+  cheaper-step: 2

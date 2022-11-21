@@ -1,0 +1,21 @@
+[run]
+omit =
+    webapp/apps/skurge/migrations/*
+    webapp/apps/skurge/*/__init__.py
+    webapp/apps/skurge/__init__.py
+    webapp/apps/skurge/models.py
+    webapp/apps/skurge/constants.py
+    webapp/apps/skurge/clients/*
+    webapp/apps/skurge/middleware/*
+    webapp/apps/skurge/common/exceptions.py
+
+[report]
+omit =
+    webapp/apps/skurge/migrations/*
+    webapp/apps/skurge/*/__init__.py
+    webapp/apps/skurge/__init__.py
+    webapp/apps/skurge/models.py
+    webapp/apps/skurge/constants.py
+    webapp/apps/skurge/clients/*
+    webapp/apps/skurge/middleware/*
+    webapp/apps/skurge/common/exceptions.py

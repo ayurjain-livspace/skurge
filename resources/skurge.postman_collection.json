@@ -1,0 +1,266 @@
+{
+	"info": {
+		"_postman_id": "33196b1d-b88f-4304-be5f-b922cafe46fb",
+		"name": "SKURGE",
+		"description": "Skurge APIs collection. This collection uses sample data used in integration tests. Set values of variables defined in collection variables.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19385978"
+	},
+	"item": [
+		{
+			"name": "Register event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"source_event\": \"TEST_EVENT\",\n    \"input_json_schema\": {\"type\": \"object\", \"required\": [\"user_id\"], \"properties\": {\"user_id\": {\"type\": \"integer\"}}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/v1/register-event",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"register-event"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get source event",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-event/{{event_id}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-event",
+						"{{event_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update source event",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"source_event\": \"NEW_TEST_EVENT\",\n    \"input_json_schema\": {\"type\": \"object\", \"required\": [\"user_id\"], \"properties\": {\"user_id\": {\"type\": \"integer\"}}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-event/{{event_id}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-event",
+						"{{event_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all registered source events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-events",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add data & relay processor to source event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data_processor\": {\n        \"graphql_query\": \"query get_data($user_id: ID!) { userDetails(user_id: $user_id) { name email country_code } }\",\n        \"relay_data_locator\": {\"if\": [{\"==\": [{\"var\": \"userDetails.country_code\"}, \"IN\"]}, {\"template_id\": \"email-template-for-india\", \"template_data.name\": \"userDetails.name\"}, {\"template_id\": \"email-template-for-others\", \"template_data.name\": \"userDetails.name\"}]},\n        \"default_response\": {\"from\": \"care@abc.com\", \"to\": \"{userDetails[email]}\"},\n        \"relay_json_schema\": {\"type\": \"object\", \"required\": [\"from\", \"to\"], \"properties\": {\"from\": {\"type\": \"string\"}, \"to\": {\"type\": \"string\"}}}\n    },\n    \"relay_processor\": {\n        \"relay_type\": \"EVENT\",\n        \"relay_system\": \"notification-service\",\n        \"relay_event_rules\": {\"if\": [{\"==\": [1, 1]}, \"SEND_EMAIL\"]},\n        \"context_data_locator\": {}\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-event/{{event_id}}/relayer",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-event",
+						"{{event_id}}",
+						"relayer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get relay and data processor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-event/{{event_id}}/relayer/{{relayer_id}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-event",
+						"{{event_id}}",
+						"relayer",
+						"{{relayer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update relay or data processor",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data_processor\": {\n        \"id\": {{data_processor_id}},\n        \"graphql_query\": \"query get_data($user_id: ID!) { userDetails(user_id: $user_id) { name email country_code } }\",\n        \"relay_data_locator\": {\"if\": [{\"==\": [{\"var\": \"userDetails.country_code\"}, \"IN\"]}, {\"template_id\": \"email-template-for-india\", \"template_data.name\": \"userDetails.name\"}, {\"template_id\": \"email-template-for-others\", \"template_data.name\": \"userDetails.name\"}]},\n        \"default_response\": {\"from\": \"care@abc.com\", \"to\": \"{userDetails[email]}\", \"new_default_key\": \"new_default_value\"},\n        \"relay_json_schema\": {\"type\": \"object\", \"required\": [\"from\", \"to\"], \"properties\": {\"from\": {\"type\": \"string\"}, \"to\": {\"type\": \"string\"}}}\n    },\n    \"relay_processor\": {\n        \"relay_type\": \"EVENT\",\n        \"relay_system\": \"new_relay_system\",\n        \"relay_event_rules\": {\"if\": [{\"==\": [1, 1]}, \"SEND_EMAIL\"]},\n        \"context_data_locator\": {}\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/v1/registered-event/{{event_id}}/relayer/{{relayer_id}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"registered-event",
+						"{{event_id}}",
+						"relayer",
+						"{{relayer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 1234\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/v1/relay-event/{{event_name}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"relay-event",
+						"{{event_name}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "HOST",
+			"value": "localhost:7042",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "data_processor_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "relayer_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "event_name",
+			"value": "TEST_EVENT",
+			"type": "string"
+		}
+	]
+}
