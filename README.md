@@ -1,8 +1,7 @@
 # Skurge #
 
-Skurge is a generic data transformation and data relay service.
+Skurge is a generic data transformation and data relay service, implementing an if-this-then-that architecture.
 
-### Problem statement
 Any business software has many underlying services interacting with each other and constantly generating data. 
 Transforming this data and relaying it to appropriate system is a common and necessary requirement.
 For eg, sending your data to an analytics service for more business insight or sending it to a communication service to send emails to the customer
