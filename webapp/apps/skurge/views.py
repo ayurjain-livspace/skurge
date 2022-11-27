@@ -32,7 +32,7 @@ class RegisteredEventsView(APIView):
         :param request:
         :return:
         """
-        logging.info("Request received to fetch all register events")
+        logging.info("Request received to fetch all registered events")
         response = SourceEventService().get_all_registered_events()
         logging.info("Fetch registered event response %s", response)
         return APIResponse.send(response)
@@ -58,7 +58,7 @@ class SourceEventView(APIView):
         :param event_id:
         :return:
         """
-        logging.info("Request received to get register event %s", event_id)
+        logging.info("Request received to get registered event %s", event_id)
         response = SourceEventService().get_registered_event(event_id=event_id)
         logging.info("Get event response %s", response)
         return APIResponse.send(response)
@@ -70,7 +70,7 @@ class SourceEventView(APIView):
         :param event_id:
         :return:
         """
-        logging.info("Request received to update register event %s", event_id)
+        logging.info("Request received to update registered event %s", event_id)
         response = SourceEventService().update_event(event_id=event_id, data=request.data)
         logging.info("Updated event response %s", response)
         return APIResponse.send(response)
@@ -85,7 +85,7 @@ class RelayEventView(APIView):
         :param event_id:
         :return:
         """
-        logging.info("Request received to add relay and data processor for register event %s", event_id)
+        logging.info("Request received to add relay and data processor for registered event %s", event_id)
         response = RelayEventService().add_processor(event_id=event_id, data=request.data)
         logging.info("Added relay processor response %s", response)
         return APIResponse.send(response)
@@ -98,7 +98,7 @@ class RelayEventView(APIView):
         :param relayer_id:
         :return:
         """
-        logging.info("Request received to update relay processor %s for register event %s", relayer_id, event_id)
+        logging.info("Request received to update relay processor %s for registered event %s", relayer_id, event_id)
         response = RelayEventService().update_processor(event_id=event_id, relayer_id=relayer_id, data=request.data)
         logging.info("Update relay processor response %s", response)
         return APIResponse.send(response)
@@ -111,7 +111,7 @@ class RelayEventView(APIView):
         :param relayer_id:
         :return:
         """
-        logging.info("Request received to get relay processor %s for register event %s", relayer_id, event_id)
+        logging.info("Request received to get relay processor %s for registered event %s", relayer_id, event_id)
         response = RelayEventService().get_relay_processor(event_id=event_id, relay_processor_id=relayer_id)
         logging.info("get relay processor response %s", response)
         return APIResponse.send(response)

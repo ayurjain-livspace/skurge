@@ -8,7 +8,8 @@ TEST_SOURCE_EVENT = {
 
 TEST_DATA_PROCESSOR = {
     "graphql_query": "query get_data($user_id: ID!) { userDetails(user_id: $user_id) { name email country_code } }",
-    "relay_data_locator": {"if": [{"==": [{"var": "userDetails.country_code"}, "IN"]}, {"template_id": "email-template-for-india", "template_data.name": "userDetails.name"}, {"template_id": "email-template-for-others", "template_data.name": "userDetails.name"}]},
+    "relay_data_locator":
+        {"if": [{"==": [{"var": "userDetails.country_code"}, "IN"]}, {"template_id": "email-template-for-india", "template_data.name": "userDetails.name"}, {"template_id": "email-template-for-others", "template_data.name": "userDetails.name"}]},
     "default_response": {"from": "care@abc.com", "to": "{userDetails[email]}"},
     "relay_json_schema": {"type": "object", "required": ["from", "to"], "properties": {"from": {"type": "string"}, "to": {"type": "string"}}}
 }

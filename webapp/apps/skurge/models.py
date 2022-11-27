@@ -14,7 +14,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def delete(self, *args, **kwargs):
+    def delete(self, using=None, keep_parents=False):
         """ Soft delete """
         self.is_deleted = True
         self.save()

@@ -62,8 +62,7 @@ class HttpClient:
         :rtype: requests.Response
         """
 
-        logging.info(
-            "GET URL: {url}, HEADERS: {headers}".format(url=kwargs.get("url", ""), headers=kwargs.get("headers", "")))
+        logging.info("GET URL: %s, HEADERS: %s", kwargs.get("url", ""), kwargs.get("headers", ""))
         kwargs["timeout"] = self.__timeout
         r = self.__session.get(**kwargs)
         r.raise_for_status()
@@ -76,9 +75,7 @@ class HttpClient:
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
-
-        logging.info("DELETE URL: {url}, HEADERS: {headers}".format(url=kwargs.get("url", ""),
-                                                                    headers=kwargs.get("headers", "")))
+        logging.info("DELETE URL: %s, HEADERS: %s", kwargs.get("url", ""), kwargs.get("headers", ""))
         kwargs["timeout"] = self.__timeout
         r = self.__session.delete(**kwargs)
         r.raise_for_status()
@@ -93,8 +90,7 @@ class HttpClient:
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
-        logging.info(
-            "POST URL: {url}, HEADERS: {headers}".format(url=kwargs.get("url", ""), headers=kwargs.get("headers", "")))
+        logging.info("POST URL: %s, HEADERS: %s", kwargs.get("url", ""), kwargs.get("headers", ""))
         kwargs["timeout"] = self.__timeout
         r = self.__session.post(**kwargs)
         r.raise_for_status()
@@ -108,9 +104,7 @@ class HttpClient:
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
-
-        logging.info(
-            "PUT URL: {url}, HEADERS: {headers}".format(url=kwargs.get("url", ""), headers=kwargs.get("headers", "")))
+        logging.info("PUT URL: %s, HEADERS: %s", kwargs.get("url", ""), kwargs.get("headers", ""))
         kwargs["timeout"] = self.__timeout
         r = self.__session.put(**kwargs)
         r.raise_for_status()
@@ -124,9 +118,7 @@ class HttpClient:
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
-
-        logging.info(
-            "PATCH URL: {url}, HEADERS: {headers}".format(url=kwargs.get("url", ""), headers=kwargs.get("headers", "")))
+        logging.info("PATCH URL: %s, HEADERS: %s", kwargs.get("url", ""), kwargs.get("headers", ""))
         kwargs["timeout"] = self.__timeout
         r = self.__session.patch(**kwargs)
         r.raise_for_status()
