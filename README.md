@@ -1,6 +1,9 @@
-# Skurge #
+# Skurge 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.txt) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](resources/contributing.md)
+<br />[![](https://img.shields.io/badge/code--coverage-95%25-brightgreen)](coverage.xml)
+<br />![](https://img.shields.io/badge/Python-3.9-green) ![](https://img.shields.io/badge/Django-2.2-green) ![](https://img.shields.io/badge/PostgreSQL-12-blue)
 
-Skurge is a generic data transformation and data relay service, implementing an if-this-then-that architecture.
+Skurge is a generic and configuration driven data transformation and data relay service, implementing an if-this-then-that architecture.
 
 Any business software has many underlying services interacting with each other and constantly generating data. 
 Transforming this data and relaying it to appropriate system is a common and necessary requirement.
@@ -11,83 +14,33 @@ or establishing asynchronous communication links among your services and much mo
 
 
 ### Solution: Skurge!
-Skurge is a ready-to-use, completely configuration driven solution to the above problem.
-It receives data, validates it against the schema you define, aggregates more data from your graphql service and relays it to appropriate system by hitting HTTP endpoint or by publishing an event to your messaging queue. It supports conditional logic throughout the flow. 
+Skurge is a ready-to-use, completely configuration driven solution to the above problem. It is designed to be a generic, low maintenance and versatile service.
+<br /> It receives data, validates it against the schema you define, aggregates more data from your graphql service and relays it to appropriate system by hitting HTTP endpoint or by publishing an event to your messaging queue. It supports conditional logic throughout the flow. 
 <br /><br />Skurge offers following benefits:
 * It is completely database configuration driven. No code changes are required for registering a new data processing and relaying flow in skurge. You just need to make entries in skurge's database tables. 
 * It can be easily integrated as a microservice in your software.
 * It works asynchronously. You can trigger it with necessary input payload and leave the rest for skurge to handle.
-* It logs failures in database table which can be used for convenient debugging.  
+* It logs relay status in database table which can be used for quick and convenient debugging.
 
 
-### Skurge flow
-* First, the source event and corresponding data & relay processors needs to be registered in skurge.
-* The flow is triggered by hitting the registered source event with necessary payload.
-* The source event payload is validated.
-* The data processing flow optionally fetches data from a graphql server, validates and transforms data to form the destination payload.
-* The relay processor decides the destination which may be an HTTP endpoint or messaging queue and relays the destination payload to the same.
-<br /><br />
-![flow_diagram](resources/flow_diagram.png)
+### Table of Contents
+* [Installation](#Installation)
+  * [Dependencies](#Dependencies)
+  * [Setting up](#Setting-up)
+  * [Configuration](#Configuration)
+  * [Running](#Running)
+  * [Testing](#Testing)
+* [Architecture](#Architecture)
+* [APIs](#APIs)
+* [Contributing](#Contributing)
+  * [Code of Conduct](#Code-of-Conduct)
+  * [Contributing Guide](#Contributing-Guide)
+* [License](#License)
+* [How Skurge has benefited us at Livspace](#How-Skurge-has-benefited-us-at-Livspace)
+* [Contact](#Contact)
 
 
-### Skurge database tables
-| Table            | Column                    | Remarks                                                                                                                                                                                                                                                                                                            |
-|:-----------------|:--------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| source_events    | id                        | Primary key                                                                                                                                                                                                                                                                                                        |
-|                  | is_deleted                | True/False for soft deletion                                                                                                                                                                                                                                                                                       |
-|                  | is_active                 | True/False to activate or deactivate flow related to this source event.                                                                                                                                                                                                                                            |
-|                  | source_event              | Name of the source event. You need to call Skurge's event processing API with this name to trigger the related flow.                                                                                                                                                                                               |
-|                  | input_json_schema         | [JsonSchema](https://json-schema.org/) to validate the data received by Skurge.                                                                                                                                                                                                                                    |
-| data_processors  | id                        | Primary key                                                                                                                                                                                                                                                                                                        |
-|                  | is_deleted                | True/False for soft deletion                                                                                                                                                                                                                                                                                       |
-|                  | graphql_query             | Graphql query to fetch more data from your graphql service. The params needed for the queries should be received as input payload by skurge.                                                                                                                                                                       |
-|                  | relay_data_locator        | The column uses [JsonLogic](https://jsonlogic.com/) for conditional if-else logic. It uses [GET](https://pydash.readthedocs.io/en/latest/api.html#pydash.objects.get) method of pydash library to get values from data dictionary received from your graphql service and input data dictionary received by skurge. |
-|                  | default response          | Default data (Eg. constants) to be relayed can be kept here as a dictionary. The dictionary values support python's [string format method](https://docs.python.org/3/library/stdtypes.html#str.format).                                                                                                            |
-|                  | relay_json_schema         | [JsonSchema](https://json-schema.org/) to validate the final payload to be relayed. Final event payload is prepared by relay_data_locator and default_response.                                                                                                                                                    |
-| relay_processors | id                        | Primary key                                                                                                                                                                                                                                                                                                        |
-|                  | source_event_id           | id of table `source_events`                                                                                                                                                                                                                                                                                        |
-|                  | data_processor_id         | id of table `data_processors`                                                                                                                                                                                                                                                                                      |
-|                  | is_deleted                | True/False for soft deletion                                                                                                                                                                                                                                                                                       |
-|                  | is_active                 | True/False to activate or deactivate the relayer                                                                                                                                                                                                                                                                   |
-|                  | relay_type                | This should be `EVENT` if you want to publish event to messaging queue or `API` if you want to hit HTTP endpoint                                                                                                                                                                                                   |
-|                  | relay_system              | Here you can add name of system where final payload is relayed                                                                                                                                                                                                                                                     |
-|                  | relay_event_rules         | Uses [JsonLogic](https://jsonlogic.com/) library to make relaying decisions when you are publishing `EVENT`. Eg. You may want to relay data to different systems or only if certain conditions are fulfilled.                                                                                                      |
-|                  | relay_http_endpoint_rules | Uses [JsonLogic](https://jsonlogic.com/) library to make relaying decisions when you are hitting `HTTP` endpoint. The string values support python's [string format method](https://docs.python.org/3/library/stdtypes.html#str.format).                                                                           |
-|                  | context_data_locator      | Uses [GET](https://pydash.readthedocs.io/en/latest/api.html#pydash.objects.get) method of pydash library to form data dictionary to be used for decision making by `relay_event_rules` or `relay_http_endpoint_rules` column.                                                                                      |
-| relay_logs       | id                        | Primary key                                                                                                                                                                                                                                                                                                        |
-|                  | source_event_name         | Name of source event                                                                                                                                                                                                                                                                                               |
-|                  | destination_relay_name    | Name of destination system where data was relayed                                                                                                                                                                                                                                                                  |
-|                  | relay_type                | `EVENT` if data was relayed by publishing event to your messaging queue and `API` for HTTP endpoint                                                                                                                                                                                                                |
-|                  | relay_data                | Final data relayed                                                                                                                                                                                                                                                                                                 |
-|                  | status                    | `SUCCESS` / `FAILURE`                                                                                                                                                                                                                                                                                              |
-|                  | reason                    | Error message                                                                                                                                                                                                                                                                                                      |
-
-
-* The ER diagram for tables `source_events`, `data_processors` and `relay_processors` tables:
-<br /><br />
-![er_diagram](resources/er_diagram.png)
-
-### APIs
-| API                                                                   | Remarks                                                                                                               |
-|:----------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| POST `api/v1/register-event`                                          | Registers an event (ie. data processing and relaying) in `source_events` table                                        |
-| GET `api/v1/registered-event/<int:event_id>`                          | Gets event corresponding to `event_id` and all its data & relay processors                                            |
-| PUT `api/v1/registered-event/<int:event_id>`                          | Updates `source_events` table                                                                                         |
-| GET `api/v1/registered-events`                                        | Gets all events registered in skurge                                                                                  |
-| POST `api/v1/registered-event/<int:event_id>/relayer`                 | Adds relay and data processor to the registered event ie. adds data in `data_processors` and `relay_processors` table |
-| GET `api/v1/registered-event/<int:event_id>/relayer/<int:relayer_id>` | Gets relay and data processor of the registered event                                                                 |
-| PUT `api/v1/registered-event/<int:event_id>/relayer/<int:relayer_id>` | Updates relay or corresponding data processor of the registered event                                                 |
-| POST `api/v1/relay-event/<slug:event_name>`                           | Processes incoming events and relays it to appropriate system                                                         |
-
-
-### OpenAPI Specification
-OpenAPI specification for above APIs can be found in the resources folder: [OpenAPI Specs](resources/skurge_openapi_specs.yaml).
-<br />You may visualise this yaml file at [editor.swagger.io](https://editor.swagger.io/) 
-
-
-### Postman collection
-* The postman collection for the APIs can be found in the resources folder: [Postman Collection](resources/skurge.postman_collection.json). You can import the json file in postman. 
-* The collection uses [sample data](webapp/apps/skurge/tests/common/constants.py) used in integration tests.
+## Installation
 
 
 ### Dependencies
@@ -96,23 +49,19 @@ OpenAPI specification for above APIs can be found in the resources folder: [Open
 * [GraphQL](https://graphql.org/), [JsonLogic](https://jsonlogic.com/), [JsonSchema](https://json-schema.org/) and [Pydash](https://pydash.readthedocs.io/en/latest/) libraries.
 * Package dependencies are mentioned in [requirements.txt](requirements.txt)
 
-
-### Installation
+### Setting up
 * Fork and clone the repository
 * Create and activate virtual environment
 * Install dependencies in [requirements.txt](requirements.txt) by running `pip install -r requirements.txt`
-
 
 ### Configuration
 * Update configurations in [configuration file](webapp/conf/env/conf.py).
 * You may also want to review settings in [settings file](webapp/conf/settings.py) and [docker file](Dockerfile).
 
-
 ### Running
 * Database migration files are present in [migrations](webapp/apps/skurge/migrations) folder. Run db migration by running `python manage.py migrate`
 * The service is a django application and can be run by `python manage.py runserver`. The default port is `7042` which may be updated in [manage.py](manage.py) file.
 * You may change [Dockerfile](Dockerfile) to build and deploy docker image.
-
 
 ### Testing
 * Integration tests are present in [tests folder](webapp/apps/skurge/tests). You can run the tests by running `python manage.py test`
@@ -125,18 +74,44 @@ OpenAPI specification for above APIs can be found in the resources folder: [Open
   * `from` (eg. your company's email) and `to` (customer email) are also added to final payload as defaults.
   * The final payload is validated against json schema.
   * An event `SEND_EMAIL` is published to messaging queue with final payload prepared above. The payload is meant for system `notification-service`. This may be your notification service which can then send email to the customer.
-  * Alternately, one can also hit an API of an `external-service` depending on user's `country code`.
+  * Alternatively, one can also hit an API of an `external-service` depending on user's `country code`.
 
-### Getting involved
-* You can raise any issues, bugs or feature request via issues tab on GitHub.
-* You may fork and create a pull request. The pull request can be merged after review.
+## Architecture
+Checkout [ARCHITECTURE.md](resources/architecture.md) to learn about data flow and database tables used in skurge.
 
-
-### License
-* This project is licensed under the terms of Apache license, Version 2.0 ([LICENSE](LICENSE.txt))
+## APIs
+Checkout [APIs.md](resources/apis.md) for information on skurge APIs.
 
 
-### Contact
+## Contributing
+
+### Code of Conduct
+Livspace has adopted a Code of Conduct that we expect project participants to adhere to.
+<br />Read our [code of conduct](resources/code_of_conduct.md).
+
+### Contributing Guide
+The main purpose of this repository is to continue evolving Skurge. We are grateful to the community for contributing bugfixes and improvements.
+<br /> Read our [contribution guidelines](resources/contributing.md) to learn about how to propose bugfixes and improvements.
+
+## License
+This project is licensed under the terms of Apache license, Version 2.0 ([LICENSE](LICENSE.txt))
+
+## How Skurge has benefited us at Livspace
+At [Livspace](https://www.livspace.com/), we use skurge, in conjunction with our notification service, to manage all our customer communications.
+We use skurge to relay data to our customer relationship management partners and third party analytics services. As we grow, we are regularly adding new and diverse use cases.
+<br /><br /> Key highlights of our journey, so far:
+* We migrated our old, code driven customer communications to skurge in less than 3 months. It is now a single point of reference to manage our 60+ critical customer communications. 
+* Skurge is designed to be developer friendly, bugs free and low maintenance service. We built it in mid of 2021 and haven't faced any issues ever since. The logs table and verbose logging has helped our developers save time and efforts. 
+* The learning curve to add new skurge configurations is short. One need not be a developer to learn the syntax. The average learning time to fully understand the service has been less than 3 days.
+* New configurations can be prepared in a matter of hours. Any new data transformation & relay flow can be prepared, tested and moved to production in a day. The average is 2 days for us, the best being under 15 minutes.
+* We have deprecated some of our microservices and moved them fully as configurations in skurge. This has helped us cut down our technology infrastructure costs.
+<br /><br /> Being a technology driven company with core principles of knowledge sharing and meaningful contribution to lives of people around us, we open sourced this project in December 2022. 
+
+
+## Contact
+You may contact the developers:
 * [Vinamra Arya](https://github.com/vinamraarya-livspace) (vinamra.arya@livspace.com)
 * [Onkar Hoysala](https://github.com/onkarhoysalalivspace) (onkar.hoysala@livspace.com)
-* [Ayur Jain](https://github.com/ayurjain-livspace) (ayur.jain@livspace.com)
+* [Ayur Jain](https://github.com/aj95) (ayur.jain@livspace.com)
+
+You may contact the organisation: [Livspace](https://www.livspace.com/in/contact-us)
