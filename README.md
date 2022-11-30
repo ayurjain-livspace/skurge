@@ -26,8 +26,8 @@ Skurge offers following benefits:
 * It works asynchronously. You can trigger it with necessary input payload and leave the rest for skurge to handle.
 * It logs relay status in database table which can be used for quick and convenient debugging.
 
-
-### Table of Contents
+---
+## Table of Contents
 * [Installation](#Installation)
   * [Dependencies](#Dependencies)
   * [Setting up](#Setting-up)
@@ -42,7 +42,7 @@ Skurge offers following benefits:
 * [License](#License)
 * [How Skurge has benefited us at Livspace](#How-Skurge-has-benefited-us-at-Livspace)
 * [Contact](#Contact)
-
+---
 
 ## Installation
 
