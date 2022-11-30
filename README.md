@@ -54,8 +54,8 @@ Skurge offers following benefits:
 * Package dependencies are mentioned in [requirements.txt](requirements.txt)
 
 ### Setting up
-* Fork and clone the repository
-* Create and activate virtual environment
+* Fork and/or clone the repository
+* Create and activate a python virtual environment
 * Install dependencies in [requirements.txt](requirements.txt) by running `pip install -r requirements.txt`
 
 ### Configuration
@@ -81,35 +81,45 @@ Skurge offers following benefits:
   * Alternatively, one can also hit an API of an `external-service` depending on user's `country code`.
 
 ## Architecture
-Checkout [ARCHITECTURE.md](resources/architecture.md) to learn about data flow and database tables used in skurge.
+Checkout [the architecture of Skurge](resources/architecture.md) to learn about data flow and database schema.
 
 ## APIs
-Checkout [APIs.md](resources/apis.md) for information on skurge APIs.
+Please use the [OpenAPI specs](resources/apis.md) for development using its APIs.
 
 
 ## Contributing
 
 ### Code of Conduct
-Livspace has adopted a Code of Conduct that we expect project participants to adhere to.
-<br />Read our [code of conduct](resources/code_of_conduct.md).
+Livspace has adopted a Code of Conduct that we expect project participants to adhere to. Read our [code of conduct](resources/code_of_conduct.md).
 
 ### Contributing Guide
 The main purpose of this repository is to continue evolving Skurge. We are grateful to the community for contributing bugfixes and improvements.
-<br /> Read our [contribution guidelines](resources/contributing.md) to learn about how to propose bugfixes and improvements.
+
+Read our [contribution guidelines](resources/contributing.md) to learn about how to propose bugfixes and improvements.
 
 ## License
 This project is licensed under the terms of Apache license, Version 2.0 ([LICENSE](LICENSE.txt))
 
-## How Skurge has benefited us at Livspace
-At [Livspace](https://www.livspace.com/), we use skurge, in conjunction with our notification service, to manage all our customer communications.
-We use skurge to relay data to our customer relationship management partners and third party analytics services. As we grow, we are regularly adding new and diverse use cases.
-<br /><br /> Key highlights of our journey, so far:
-* We migrated our old, code driven customer communications to skurge in less than 3 months. It is now a single point of reference to manage our 60+ critical customer communications. 
+## How we use Skurge at Livspace
+At [Livspace](https://www.livspace.com/), we use Skurge across teams for various async transformation + relay activities. We will focus here on one such critical aspect: customer communication. In conjunction with our notification service, we use Skurge to manage all our customer communications by relaying data to our customer relationship management partners and third party analytics services. 
+
+```mermaid
+sequenceDiagram
+  Service A ->> AMQP: Emits an event with necessary payload
+  Skurge ->> AMQP: Reads from the queue and parses the payload
+  Skurge ->> Database: Fetches the configuration for the particular event type
+  Skurge ->> GraphQL: Requests for all needed data using GQL queries as per configuration
+  GraphQL ->> Skurge:  All requested data fields
+  Skurge ->> Skurge: Transforms data according to the data transformer logic
+  Skurge ->> Other Services: Relays data to services
+ ```
+
+Key highlights of our journey, so far:
+* We migrated our old, code-driven customer communications to skurge in less than 3 months. It is now a single point of reference to manage our 60+ touchpoints of critical customer communications. 
 * Skurge is designed to be developer friendly, bugs free and low maintenance service. We built it in mid of 2021 and haven't faced any issues ever since. The logs table and verbose logging has helped our developers save time and efforts. 
 * The learning curve to add new skurge configurations is short. One need not be a developer to learn the syntax. The average learning time to fully understand the service has been less than 3 days.
 * New configurations can be prepared in a matter of hours. Any new data transformation & relay flow can be prepared, tested and moved to production in a day. The average is 2 days for us, the best being under 15 minutes.
 * We have deprecated some of our microservices and moved them fully as configurations in skurge. This has helped us cut down our technology infrastructure costs.
-<br /><br /> Being a technology driven company with core principles of knowledge sharing and meaningful contribution to lives of people around us, we open sourced this project in December 2022. 
 
 
 ## Contact
@@ -118,4 +128,4 @@ You may contact the developers:
 * [Onkar Hoysala](https://github.com/onkarhoysalalivspace) (onkar.hoysala@livspace.com)
 * [Ayur Jain](https://github.com/aj95) (ayur.jain@livspace.com)
 
-You may contact the organisation: [Livspace](https://www.livspace.com/in/contact-us)
+You can contact the organisation: [Livspace](https://www.livspace.com/in/contact-us)
