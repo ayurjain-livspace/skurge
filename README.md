@@ -5,18 +5,22 @@
 
 Skurge is a generic and configuration driven data transformation and data relay service, implementing an if-this-then-that architecture.
 
-Any business software has many underlying services interacting with each other and constantly generating data. 
-Transforming this data and relaying it to appropriate system is a common and necessary requirement.
-For eg, sending your data to an analytics service for more business insight or sending it to a communication service to send emails to the customer
+Microservice based business software have many underlying services interacting with each other and constantly generating data. 
+Transforming this data and relaying it to appropriate systems is a common and necessary requirement.
+For example, sending your data to an analytics service for business insights or sending it to a communication service to send emails to the customer
 or establishing asynchronous communication links among your services and much more.
-<br />Handling all these requirements individually in different services may lead to code repetition, difficulty in debugging errors, frequent code changes and overloading core business services with auxiliary work.
-<br />With this, comes a need of a service that can reliably handle all these tasks.
+
+Handling all these requirements individually in different services may lead to code repetition, bloat, frequent code changes and overloading core business services with auxiliary work.
+
+With this, comes a need of a service that can reliably handle performing DTS actions on a particular trigger based on stored configurations, and further relay the transformed data to other services, via different protocols.
 
 
 ### Solution: Skurge!
-Skurge is a ready-to-use, completely configuration driven solution to the above problem. It is designed to be a generic, low maintenance and versatile service.
-<br /> It receives data, validates it against the schema you define, aggregates more data from your graphql service and relays it to appropriate system by hitting HTTP endpoint or by publishing an event to your messaging queue. It supports conditional logic throughout the flow. 
-<br /><br />Skurge offers following benefits:
+Skurge is a ready-to-use generic and low maintenance service, configuration driven solution to the above problem.
+
+It receives data, validates it against the schema you define, aggregates more data associated endpoints via a GraphQL layer, and relays it to appropriate systems via two currently supported protocols: HTTP, and AMQP. It supports conditional logic throughout the flow. 
+
+Skurge offers following benefits:
 * It is completely database configuration driven. No code changes are required for registering a new data processing and relaying flow in skurge. You just need to make entries in skurge's database tables. 
 * It can be easily integrated as a microservice in your software.
 * It works asynchronously. You can trigger it with necessary input payload and leave the rest for skurge to handle.
