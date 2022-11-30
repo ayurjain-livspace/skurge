@@ -40,7 +40,7 @@ Skurge offers following benefits:
   * [Code of Conduct](#Code-of-Conduct)
   * [Contributing Guide](#Contributing-Guide)
 * [License](#License)
-* [How Skurge has benefited us at Livspace](#How-Skurge-has-benefited-us-at-Livspace)
+* [How we use Skurge at Livspace](#How-we-use-Skurge-at-Livspace)
 * [Contact](#Contact)
 ---
 
@@ -101,7 +101,7 @@ Read our [contribution guidelines](resources/contributing.md) to learn about how
 This project is licensed under the terms of Apache license, Version 2.0 ([LICENSE](LICENSE.txt))
 
 ## How we use Skurge at Livspace
-At [Livspace](https://www.livspace.com/), we use Skurge across teams for various async transformation + relay activities. We will focus here on one such critical aspect: customer communication. In conjunction with our notification service, we use Skurge to manage all our customer communications by relaying data to our customer relationship management partners and third party analytics services. 
+At [Livspace](https://www.livspace.com/), we use Skurge across teams for various async transformation + relay activities. We will focus here on one such critical aspect: customer communication. In conjunction with our notification service, we use Skurge to manage all our customer communications by relaying data to our customer relationship management partners. We also use skurge to send appropriate payload to our analytics services, based on various AMQP events that happen within the ecosystem. 
 
 ```mermaid
 sequenceDiagram
