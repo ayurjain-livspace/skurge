@@ -1,3 +1,4 @@
+import json
 import logging
 import copy
 import pydash
@@ -271,5 +272,5 @@ class RelayEventProcessor:
         if relay_processor.get("relay_type") == RelayType.EVENT.value:
             RabbitMQClient().publish(self.event, self.relay_data)
         elif relay_processor.get("relay_type") == RelayType.API.value:
-            HttpUtil().publish_message(url=self.endpoint, http_method=self.http_method, data=self.relay_data,
+            HttpUtil().publish_message(url=self.endpoint, http_method=self.http_method, data=json.dumps(self.relay_data),
                                        headers=self.headers)
